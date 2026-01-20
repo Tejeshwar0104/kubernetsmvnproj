@@ -40,12 +40,18 @@ pipeline {
     stage('Push Docker Image to DockerHub') {
       steps {
         echo 'Pushing  Docker Image'
-        withCredentials([string(credentialsId: 'dockerpasswd', variable: 'DOCKER_PASS')]) {
-  	      bat '''
-          echo %DOCKER_PASS% | docker login -u tejeshwar144 --password-stdin
-          docker tag myjavaproj:1.0 tejeshwar144/myindiaproj:1.0
-          docker push tejeshwar144/myindiaproj:1.0
-          '''}
+        withCredentials([usernamePassword(
+		    credentialsId: 'dockerpasswd',
+		    usernameVariable: 'DOCKER_USER',
+		    passwordVariable: 'DOCKER_PASS'
+		)]) {
+		    bat '''
+		    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+		    docker tag myjavaproj:1.0 %DOCKER_USER%/myindiaproj:1.0
+		    docker push %DOCKER_USER%/myindiaproj:1.0
+		    '''
+		}
+
       }
     }
     /*stage('Run Docker Container') {
